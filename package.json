@@ -1,6 +1,6 @@
 {
   "name": "botcast-sdk",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Official TypeScript/JavaScript SDK for Botcast WhatsApp & Telegram MTProto Multi-Instance API Gateway",
   "type": "module",
   "main": "./dist/index.cjs",
