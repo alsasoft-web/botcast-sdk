@@ -20,3 +20,4 @@ __exportStar(require("./chats.js"), exports);
 __exportStar(require("./groups.js"), exports);
 __exportStar(require("./profile.js"), exports);
 __exportStar(require("./webhooks.js"), exports);
+__exportStar(require("./socket.js"), exports);

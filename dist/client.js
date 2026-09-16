@@ -5,6 +5,7 @@ import { GroupsModule } from './modules/groups.js';
 import { ProfileModule } from './modules/profile.js';
 import { BroadcastModule } from './modules/broadcast.js';
 import { BotcastWebhook } from './webhooks/index.js';
+import { BotcastSocketClient } from './socket/index.js';
 export class BotcastClient {
     config;
     /** Instance Lifecycle & Connection Management */
@@ -21,10 +22,13 @@ export class BotcastClient {
     broadcast;
     /** Webhook Handler & Middleware */
     webhook;
+    /** Real-Time Socket.io Event Gateway Client */
+    socket;
     /**
      * Initializes a new Botcast API Client.
      *
      * @param config Client configuration options
+     * @param socketOptions Optional Socket.io client overrides
      *
      * @example
      * ```ts
@@ -36,11 +40,16 @@ export class BotcastClient {
      *   instanceToken: 'token_xyz789'
      * });
      *
+     * // Listen for real-time events via Socket.io
+     * botcast.socket.onMessage((msg) => {
+     *   console.log('Incoming message:', msg);
+     * });
+     *
      * // Send a text message
      * await botcast.messages.sendText('201000000000', 'Hello from Botcast SDK!');
      * ```
      */
-    constructor(config) {
+    constructor(config, socketOptions) {
         if (!config.instanceId) {
             throw new Error('BotcastClient requires a valid "instanceId"');
         }
@@ -55,6 +64,7 @@ export class BotcastClient {
             timeout: config.timeout || 30000,
             maxRetries: config.maxRetries ?? 2,
             headers: config.headers || {},
+            autoConnectSocket: config.autoConnectSocket ?? false,
         };
         this.instances = new InstancesModule(this.config);
         this.messages = new MessagesModule(this.config);
@@ -63,6 +73,10 @@ export class BotcastClient {
         this.profile = new ProfileModule(this.config);
         this.broadcast = new BroadcastModule(this.config);
         this.webhook = new BotcastWebhook();
+        this.socket = new BotcastSocketClient(this.config, {
+            autoConnect: config.autoConnectSocket,
+            ...socketOptions,
+        });
     }
     // =========================================================================
     // Top-Level Convenience Shortcuts

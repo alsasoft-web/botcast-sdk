@@ -14,13 +14,15 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BotcastWebhook = exports.BotcastAdminClient = exports.BotcastClient = void 0;
+exports.BotcastSocketClient = exports.BotcastWebhook = exports.BotcastAdminClient = exports.BotcastClient = void 0;
 var client_js_1 = require("./client.js");
 Object.defineProperty(exports, "BotcastClient", { enumerable: true, get: function () { return client_js_1.BotcastClient; } });
 var admin_js_1 = require("./admin.js");
 Object.defineProperty(exports, "BotcastAdminClient", { enumerable: true, get: function () { return admin_js_1.BotcastAdminClient; } });
 var index_js_1 = require("./webhooks/index.js");
 Object.defineProperty(exports, "BotcastWebhook", { enumerable: true, get: function () { return index_js_1.BotcastWebhook; } });
+var index_js_2 = require("./socket/index.js");
+Object.defineProperty(exports, "BotcastSocketClient", { enumerable: true, get: function () { return index_js_2.BotcastSocketClient; } });
 __exportStar(require("./errors.js"), exports);
 __exportStar(require("./types/index.js"), exports);
 // Default export

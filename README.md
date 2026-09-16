@@ -273,7 +273,7 @@ await client.messages.delete("201012345678", msgKey);
 await client.messages.markAsRead(msgKey);
 
 // 4. Emoji reaction
-await client.messages.react("201012345678", msgKey, "👍");
+await client.messages.react("201012345678", msgKey, "STAR");
 
 // 5. Pin message
 await client.messages.pin("201012345678", msgKey, 1, 86400);
@@ -286,7 +286,59 @@ await client.messages.forward("201012345678", {
 
 ---
 
-### 4. Chats, Contacts, and History (`client.chats`)
+### 4. Real-Time Socket.io Event Gateway (`client.socket`)
+
+Stream real-time instance events directly with zero latency over **Socket.io**:
+
+```typescript
+import { BotcastClient } from "botcast-sdk";
+
+const client = new BotcastClient({
+  baseUrl: "https://botcast.site",
+  instanceId: "your_instance_id",
+  instanceToken: "your_instance_token",
+  autoConnectSocket: true, // or call client.socket.connect() manually
+});
+
+// 1. Listen for new incoming/outgoing messages
+client.socket.onMessage((msg) => {
+  console.log("Real-time message:", msg);
+});
+
+// 2. Listen for delivery status & read receipts
+client.socket.onMessageStatus((status) => {
+  console.log("Message status update:", status);
+});
+
+// 3. Listen for emoji reactions
+client.socket.onReaction((reaction) => {
+  console.log("Reaction event:", reaction);
+});
+
+// 4. Listen for deleted/revoked messages
+client.socket.onMessageDeleted((del) => {
+  console.log("Message deleted:", del);
+});
+
+// 5. Listen for user presence (typing, recording, online state)
+client.socket.onPresence((presence) => {
+  console.log("Presence update:", presence);
+});
+
+// 6. Listen for instance connection & QR updates
+client.socket.onConnectionUpdate((conn) => {
+  console.log("Connection state:", conn.status, conn.qr || conn.pairingCode);
+});
+
+// 7. Generic event listener
+client.socket.onEvent((event) => {
+  console.log("Instance event received:", event.event, event);
+});
+```
+
+---
+
+### 5. Chats, Contacts, and History (`client.chats`)
 
 ```typescript
 // 1. List chats / dialogs
@@ -309,7 +361,7 @@ await client.chats.pin("201012345678@s.whatsapp.net");
 
 ---
 
-### 5. Webhook Event Handling
+### 6. Webhook Event Handling
 
 The SDK includes a built-in event dispatcher and middleware for handling inbound webhooks from both WhatsApp and Telegram:
 

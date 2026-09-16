@@ -8,6 +8,7 @@ const groups_js_1 = require("./modules/groups.js");
 const profile_js_1 = require("./modules/profile.js");
 const broadcast_js_1 = require("./modules/broadcast.js");
 const index_js_1 = require("./webhooks/index.js");
+const index_js_2 = require("./socket/index.js");
 class BotcastClient {
     config;
     /** Instance Lifecycle & Connection Management */
@@ -24,10 +25,13 @@ class BotcastClient {
     broadcast;
     /** Webhook Handler & Middleware */
     webhook;
+    /** Real-Time Socket.io Event Gateway Client */
+    socket;
     /**
      * Initializes a new Botcast API Client.
      *
      * @param config Client configuration options
+     * @param socketOptions Optional Socket.io client overrides
      *
      * @example
      * ```ts
@@ -39,11 +43,16 @@ class BotcastClient {
      *   instanceToken: 'token_xyz789'
      * });
      *
+     * // Listen for real-time events via Socket.io
+     * botcast.socket.onMessage((msg) => {
+     *   console.log('Incoming message:', msg);
+     * });
+     *
      * // Send a text message
      * await botcast.messages.sendText('201000000000', 'Hello from Botcast SDK!');
      * ```
      */
-    constructor(config) {
+    constructor(config, socketOptions) {
         if (!config.instanceId) {
             throw new Error('BotcastClient requires a valid "instanceId"');
         }
@@ -58,6 +67,7 @@ class BotcastClient {
             timeout: config.timeout || 30000,
             maxRetries: config.maxRetries ?? 2,
             headers: config.headers || {},
+            autoConnectSocket: config.autoConnectSocket ?? false,
         };
         this.instances = new instances_js_1.InstancesModule(this.config);
         this.messages = new messages_js_1.MessagesModule(this.config);
@@ -66,6 +76,10 @@ class BotcastClient {
         this.profile = new profile_js_1.ProfileModule(this.config);
         this.broadcast = new broadcast_js_1.BroadcastModule(this.config);
         this.webhook = new index_js_1.BotcastWebhook();
+        this.socket = new index_js_2.BotcastSocketClient(this.config, {
+            autoConnect: config.autoConnectSocket,
+            ...socketOptions,
+        });
     }
     // =========================================================================
     // Top-Level Convenience Shortcuts

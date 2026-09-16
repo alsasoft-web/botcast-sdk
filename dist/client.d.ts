@@ -6,6 +6,7 @@ import { GroupsModule } from './modules/groups.js';
 import { ProfileModule } from './modules/profile.js';
 import { BroadcastModule } from './modules/broadcast.js';
 import { BotcastWebhook } from './webhooks/index.js';
+import { BotcastSocketClient, BotcastSocketOptions } from './socket/index.js';
 export declare class BotcastClient {
     private config;
     /** Instance Lifecycle & Connection Management */
@@ -22,10 +23,13 @@ export declare class BotcastClient {
     broadcast: BroadcastModule;
     /** Webhook Handler & Middleware */
     webhook: BotcastWebhook;
+    /** Real-Time Socket.io Event Gateway Client */
+    socket: BotcastSocketClient;
     /**
      * Initializes a new Botcast API Client.
      *
      * @param config Client configuration options
+     * @param socketOptions Optional Socket.io client overrides
      *
      * @example
      * ```ts
@@ -37,11 +41,16 @@ export declare class BotcastClient {
      *   instanceToken: 'token_xyz789'
      * });
      *
+     * // Listen for real-time events via Socket.io
+     * botcast.socket.onMessage((msg) => {
+     *   console.log('Incoming message:', msg);
+     * });
+     *
      * // Send a text message
      * await botcast.messages.sendText('201000000000', 'Hello from Botcast SDK!');
      * ```
      */
-    constructor(config: BotcastClientConfig);
+    constructor(config: BotcastClientConfig, socketOptions?: BotcastSocketOptions);
     /**
      * Shortcut to send a text message.
      */

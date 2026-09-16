@@ -4,6 +4,7 @@ export * from './chats.js';
 export * from './groups.js';
 export * from './profile.js';
 export * from './webhooks.js';
+export * from './socket.js';
 
 export interface BotcastClientConfig {
   /**
@@ -41,4 +42,9 @@ export interface BotcastClientConfig {
    * Custom HTTP headers to include with every request.
    */
   headers?: Record<string, string>;
+
+  /**
+   * Auto-connect the Socket.io real-time client upon initialization (default: false).
+   */
+  autoConnectSocket?: boolean;
 }

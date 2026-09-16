@@ -27,6 +27,35 @@ test('BotcastClient initializes properly with valid credentials', () => {
   assert.ok(client.profile);
   assert.ok(client.broadcast);
   assert.ok(client.webhook);
+  assert.ok(client.socket);
+});
+
+test('BotcastSocketClient initializes and registers listeners correctly', () => {
+  const client = new BotcastClient({
+    baseUrl: 'https://test.botcast.site',
+    instanceId: 'inst_test_123',
+    instanceToken: 'tok_test_abc',
+  });
+
+  assert.ok(client.socket);
+  assert.strictEqual(typeof client.socket.connect, 'function');
+  assert.strictEqual(typeof client.socket.disconnect, 'function');
+  assert.strictEqual(typeof client.socket.onMessage, 'function');
+  assert.strictEqual(typeof client.socket.onMessageStatus, 'function');
+  assert.strictEqual(typeof client.socket.onReaction, 'function');
+  assert.strictEqual(typeof client.socket.onMessageDeleted, 'function');
+  assert.strictEqual(typeof client.socket.onPresence, 'function');
+  assert.strictEqual(typeof client.socket.onConnectionUpdate, 'function');
+  assert.strictEqual(typeof client.socket.onGroupParticipants, 'function');
+  assert.strictEqual(typeof client.socket.onCall, 'function');
+  assert.strictEqual(typeof client.socket.onEvent, 'function');
+  assert.strictEqual(typeof client.socket.onTelegramMessage, 'function');
+  assert.strictEqual(typeof client.socket.onTelegramMessageEdited, 'function');
+  assert.strictEqual(typeof client.socket.onTelegramMessageDeleted, 'function');
+  assert.strictEqual(typeof client.socket.onTelegramMessageRead, 'function');
+  assert.strictEqual(typeof client.socket.onTelegramUserUpdate, 'function');
+  assert.strictEqual(typeof client.socket.onTelegramChatAction, 'function');
+  assert.strictEqual(typeof client.socket.onTelegramCallbackQuery, 'function');
 });
 
 test('BotcastClient throws validation error on missing credentials', () => {
