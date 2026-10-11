@@ -1,10 +1,17 @@
 import { BaseModule } from './base.js';
-import { SendMessageResponse, SendOTPOptions, MessageKey, BaseMessageOptions } from '../types/index.js';
+import { SendMessageResponse, SendOTPOptions, SendButtonsOptions, MessageKey, BaseMessageOptions } from '../types/index.js';
 export declare class MessagesModule extends BaseModule {
     /**
      * Sends a raw message payload to the Botcast gateway.
      */
     send(payload: Record<string, any>): Promise<SendMessageResponse>;
+    /**
+     * Sends modern WhatsApp interactive native flow buttons (Quick Reply, CTA URL, Call, Copy Code).
+     *
+     * @param recipient Target phone number or JID
+     * @param buttonsOptions Buttons configuration (body, title, footer, buttons array)
+     */
+    sendButtons(recipient: string, buttonsOptions: SendButtonsOptions): Promise<SendMessageResponse>;
     /**
      * Sends a plain text message.
      *

@@ -1,4 +1,25 @@
-export type MessageType = 'text' | 'image' | 'video' | 'audio' | 'voice' | 'document' | 'sticker' | 'location' | 'contact' | 'reaction' | 'pin' | 'poll' | 'forward' | 'otp' | 'disappearing';
+export type MessageType = 'text' | 'buttons' | 'image' | 'video' | 'audio' | 'voice' | 'document' | 'sticker' | 'location' | 'contact' | 'reaction' | 'pin' | 'poll' | 'forward' | 'otp' | 'disappearing';
+export interface InteractiveButton {
+    name?: 'quick_reply' | 'cta_url' | 'cta_call' | 'cta_copy';
+    displayText?: string;
+    text?: string;
+    label?: string;
+    id?: string;
+    buttonId?: string;
+    url?: string;
+    phoneNumber?: string;
+    phone?: string;
+    copyCode?: string;
+    params?: Record<string, any>;
+}
+export interface SendButtonsOptions extends BaseMessageOptions {
+    title?: string;
+    header?: string;
+    body?: string;
+    text?: string;
+    footer?: string;
+    buttons: InteractiveButton[];
+}
 export interface MessageKey {
     remoteJid?: string;
     fromMe?: boolean;

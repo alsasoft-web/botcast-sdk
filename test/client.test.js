@@ -150,6 +150,51 @@ test('BotcastClient sends text message and builds correct request path', async (
   assert.strictEqual(interceptedBody.text, 'Hello WhatsApp!');
 });
 
+test('BotcastClient sends interactive buttons and builds correct /buttons request path', async (t) => {
+  const originalFetch = global.fetch;
+  let interceptedUrl = null;
+  let interceptedBody = null;
+
+  global.fetch = async (url, options) => {
+    interceptedUrl = url;
+    interceptedBody = JSON.parse(options.body);
+    return {
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({
+        success: true,
+        messageId: 'msg_btn_123',
+        status: 'sent',
+      }),
+    };
+  };
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const client = new BotcastClient({
+    baseUrl: 'https://api.botcast.site',
+    instanceId: 'inst_abc',
+    instanceToken: 'token_xyz',
+  });
+
+  const res = await client.messages.sendButtons('201000000000', {
+    body: 'Select option',
+    buttons: [
+      { name: 'quick_reply', displayText: 'Confirm', id: 'btn_yes' },
+    ],
+  });
+
+  assert.strictEqual(res.success, true);
+  assert.strictEqual(res.messageId, 'msg_btn_123');
+  assert.strictEqual(interceptedUrl, 'https://api.botcast.site/whatsapp/inst_abc/token_xyz/buttons');
+  assert.strictEqual(interceptedBody.recipient, '201000000000');
+  assert.strictEqual(interceptedBody.body, 'Select option');
+  assert.strictEqual(interceptedBody.buttons.length, 1);
+});
+
 test('BotcastClient handles 402 payment required and 429 rate limit correctly', async (t) => {
   const originalFetch = global.fetch;
 

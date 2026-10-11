@@ -7,6 +7,7 @@ import {
   SendContactOptions,
   SendPollOptions,
   SendOTPOptions,
+  SendButtonsOptions,
   MessageKey,
   BaseMessageOptions,
 } from '../types/index.js';
@@ -20,6 +21,27 @@ export class MessagesModule extends BaseModule {
       method: 'POST',
       path: this.buildPath('send'),
       body: payload,
+    });
+  }
+
+  /**
+   * Sends modern WhatsApp interactive native flow buttons (Quick Reply, CTA URL, Call, Copy Code).
+   *
+   * @param recipient Target phone number or JID
+   * @param buttonsOptions Buttons configuration (body, title, footer, buttons array)
+   */
+  public async sendButtons(
+    recipient: string,
+    buttonsOptions: SendButtonsOptions
+  ): Promise<SendMessageResponse> {
+    return this.request<SendMessageResponse>({
+      method: 'POST',
+      path: this.buildPath('buttons'),
+      body: {
+        recipient,
+        type: 'buttons',
+        ...buttonsOptions,
+      },
     });
   }
 

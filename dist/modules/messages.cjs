@@ -14,6 +14,23 @@ class MessagesModule extends base_js_1.BaseModule {
         });
     }
     /**
+     * Sends modern WhatsApp interactive native flow buttons (Quick Reply, CTA URL, Call, Copy Code).
+     *
+     * @param recipient Target phone number or JID
+     * @param buttonsOptions Buttons configuration (body, title, footer, buttons array)
+     */
+    async sendButtons(recipient, buttonsOptions) {
+        return this.request({
+            method: 'POST',
+            path: this.buildPath('buttons'),
+            body: {
+                recipient,
+                type: 'buttons',
+                ...buttonsOptions,
+            },
+        });
+    }
+    /**
      * Sends a plain text message.
      *
      * @param recipient Target phone number or JID
