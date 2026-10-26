@@ -5,3 +5,4 @@ export * from './groups.js';
 export * from './profile.js';
 export * from './webhooks.js';
 export * from './socket.js';
+export const BOTCAST_OFFICIAL_URL = 'https://botcast.site';

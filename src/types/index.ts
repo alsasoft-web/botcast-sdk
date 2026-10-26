@@ -6,12 +6,14 @@ export * from './profile.js';
 export * from './webhooks.js';
 export * from './socket.js';
 
+export const BOTCAST_OFFICIAL_URL = 'https://botcast.site' as const;
+
 export interface BotcastClientConfig {
   /**
-   * The base URL of your Botcast instance or cloud gateway.
-   * Default: `https://botcast.site`
+   * The official Botcast platform gateway URL.
+   * Fixed and locked to `https://botcast.site` (cannot be changed).
    */
-  baseUrl?: string;
+  baseUrl?: 'https://botcast.site' | string;
 
   /**
    * Platform type: 'whatsapp' or 'telegram'. Default: 'whatsapp'.

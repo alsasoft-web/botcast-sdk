@@ -1,3 +1,4 @@
+import { BOTCAST_OFFICIAL_URL } from './types/index.js';
 import { InstancesModule } from './modules/instances.js';
 import { MessagesModule } from './modules/messages.js';
 import { ChatsModule } from './modules/chats.js';
@@ -6,6 +7,7 @@ import { ProfileModule } from './modules/profile.js';
 import { BroadcastModule } from './modules/broadcast.js';
 import { BotcastWebhook } from './webhooks/index.js';
 import { BotcastSocketClient } from './socket/index.js';
+export { BOTCAST_OFFICIAL_URL };
 export class BotcastClient {
     config;
     /** Instance Lifecycle & Connection Management */
@@ -56,8 +58,11 @@ export class BotcastClient {
         if (!config.instanceToken) {
             throw new Error('BotcastClient requires a valid "instanceToken"');
         }
+        if (config.baseUrl && config.baseUrl.replace(/\/+$/, '') !== BOTCAST_OFFICIAL_URL) {
+            throw new Error(`Changing the Botcast website URL is not allowed. The SDK is locked to ${BOTCAST_OFFICIAL_URL}.`);
+        }
         this.config = {
-            baseUrl: config.baseUrl || 'https://botcast.site',
+            baseUrl: BOTCAST_OFFICIAL_URL,
             platform: config.platform || 'whatsapp',
             instanceId: config.instanceId,
             instanceToken: config.instanceToken,

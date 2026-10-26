@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert';
 import {
   BotcastClient,
+  BotcastAdminClient,
   BotcastWebhook,
   BotcastError,
   BotcastAuthError,
@@ -12,9 +13,21 @@ import {
   BotcastNotFoundError,
 } from '../dist/index.js';
 
+test('BotcastClient rejects changing the website URL', () => {
+  assert.throws(
+    () => {
+      new BotcastClient({
+        baseUrl: 'https://evil.site',
+        instanceId: 'inst_test_123',
+        instanceToken: 'tok_test_abc',
+      });
+    },
+    /Changing the Botcast website URL is not allowed/
+  );
+});
+
 test('BotcastClient initializes properly with valid credentials', () => {
   const client = new BotcastClient({
-    baseUrl: 'https://test.botcast.site',
     instanceId: 'inst_test_123',
     instanceToken: 'tok_test_abc',
   });
@@ -32,7 +45,6 @@ test('BotcastClient initializes properly with valid credentials', () => {
 
 test('BotcastSocketClient initializes and registers listeners correctly', () => {
   const client = new BotcastClient({
-    baseUrl: 'https://test.botcast.site',
     instanceId: 'inst_test_123',
     instanceToken: 'tok_test_abc',
   });
@@ -136,7 +148,6 @@ test('BotcastClient sends text message and builds correct request path', async (
   });
 
   const client = new BotcastClient({
-    baseUrl: 'https://api.botcast.site',
     instanceId: 'inst_abc',
     instanceToken: 'token_xyz',
   });
@@ -145,7 +156,7 @@ test('BotcastClient sends text message and builds correct request path', async (
 
   assert.strictEqual(res.success, true);
   assert.strictEqual(res.messageId, 'msg_test_789');
-  assert.strictEqual(interceptedUrl, 'https://api.botcast.site/whatsapp/inst_abc/token_xyz/send');
+  assert.strictEqual(interceptedUrl, 'https://botcast.site/whatsapp/inst_abc/token_xyz/send');
   assert.strictEqual(interceptedBody.recipient, '201000000000');
   assert.strictEqual(interceptedBody.text, 'Hello WhatsApp!');
 });
@@ -175,7 +186,6 @@ test('BotcastClient sends interactive buttons and builds correct /buttons reques
   });
 
   const client = new BotcastClient({
-    baseUrl: 'https://api.botcast.site',
     instanceId: 'inst_abc',
     instanceToken: 'token_xyz',
   });
@@ -189,7 +199,7 @@ test('BotcastClient sends interactive buttons and builds correct /buttons reques
 
   assert.strictEqual(res.success, true);
   assert.strictEqual(res.messageId, 'msg_btn_123');
-  assert.strictEqual(interceptedUrl, 'https://api.botcast.site/whatsapp/inst_abc/token_xyz/buttons');
+  assert.strictEqual(interceptedUrl, 'https://botcast.site/whatsapp/inst_abc/token_xyz/buttons');
   assert.strictEqual(interceptedBody.recipient, '201000000000');
   assert.strictEqual(interceptedBody.body, 'Select option');
   assert.strictEqual(interceptedBody.buttons.length, 1);
@@ -230,16 +240,29 @@ test('BotcastClient handles 402 payment required and 429 rate limit correctly', 
   );
 });
 
-test('BotcastAdminClient supports setting exact expiration dates on create, update, renew and setExpiration', async (t) => {
-  const { BotcastAdminClient } = await import('../dist/index.js');
+
+
+test('BotcastAdminClient rejects changing the website URL', () => {
+  assert.throws(
+    () => {
+      new BotcastAdminClient({
+        baseUrl: 'https://evil.site',
+        apiKey: 'bcast_live_adminkey123',
+      });
+    },
+    /Changing the Botcast website URL is not allowed/
+  );
+});
+
+test('BotcastAdminClient supports exact expiration date configuration', async (t) => {
   const originalFetch = global.fetch;
   const calls = [];
 
   global.fetch = async (url, options) => {
     calls.push({
-      url: url.toString(),
+      url,
       method: options.method,
-      headers: options.headers,
+      headers: Object.fromEntries(new Headers(options.headers).entries()),
       body: options.body ? JSON.parse(options.body) : null,
     });
 
@@ -249,7 +272,6 @@ test('BotcastAdminClient supports setting exact expiration dates on create, upda
       headers: new Headers({ 'content-type': 'application/json' }),
       json: async () => ({
         success: true,
-        message: 'Success',
         instance: {
           id: 'ins_paid_test',
           name: 'Test Instance',
@@ -264,7 +286,6 @@ test('BotcastAdminClient supports setting exact expiration dates on create, upda
   });
 
   const admin = new BotcastAdminClient({
-    baseUrl: 'https://api.botcast.site',
     apiKey: 'bcast_live_adminkey123',
   });
 
@@ -273,7 +294,7 @@ test('BotcastAdminClient supports setting exact expiration dates on create, upda
     name: 'Customer WhatsApp',
     expires_at: '2027-01-01T00:00:00.000Z',
   });
-  assert.strictEqual(calls[0].url, 'https://api.botcast.site/api/instances');
+  assert.strictEqual(calls[0].url, 'https://botcast.site/api/instances');
   assert.strictEqual(calls[0].method, 'POST');
   assert.strictEqual(calls[0].body.expires_at, '2027-01-01T00:00:00.000Z');
   assert.strictEqual(calls[0].headers['x-api-key'], 'bcast_live_adminkey123');
@@ -282,7 +303,7 @@ test('BotcastAdminClient supports setting exact expiration dates on create, upda
   await admin.renewInstance('ins_paid_test', {
     expires_at: new Date('2028-06-01T00:00:00.000Z'),
   });
-  assert.strictEqual(calls[1].url, 'https://api.botcast.site/api/instances/ins_paid_test/renew');
+  assert.strictEqual(calls[1].url, 'https://botcast.site/api/instances/ins_paid_test/renew');
   assert.strictEqual(calls[1].method, 'POST');
   assert.strictEqual(calls[1].body.expires_at, '2028-06-01T00:00:00.000Z');
 
@@ -290,13 +311,13 @@ test('BotcastAdminClient supports setting exact expiration dates on create, upda
   await admin.updateInstance('ins_paid_test', {
     expires_at: '2029-01-01T00:00:00.000Z',
   });
-  assert.strictEqual(calls[2].url, 'https://api.botcast.site/api/instances/ins_paid_test');
+  assert.strictEqual(calls[2].url, 'https://botcast.site/api/instances/ins_paid_test');
   assert.strictEqual(calls[2].method, 'PUT');
   assert.strictEqual(calls[2].body.expires_at, '2029-01-01T00:00:00.000Z');
 
   // 4. setExpiration helper
   await admin.setExpiration('ins_paid_test', '2030-01-01T00:00:00.000Z');
-  assert.strictEqual(calls[3].url, 'https://api.botcast.site/api/instances/ins_paid_test');
+  assert.strictEqual(calls[3].url, 'https://botcast.site/api/instances/ins_paid_test');
   assert.strictEqual(calls[3].method, 'PUT');
   assert.strictEqual(calls[3].body.expires_at, '2030-01-01T00:00:00.000Z');
 });

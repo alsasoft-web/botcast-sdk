@@ -78,7 +78,6 @@ await admin.renewInstance(instance.id, { months: 12 });
 import { BotcastClient } from "botcast-sdk";
 
 const whatsappBot = new BotcastClient({
-  baseUrl: "https://botcast.site", // or your self-hosted server URL
   platform: "whatsapp", // 'whatsapp' (default) or 'telegram'
   instanceId: "your_instance_id",
   instanceToken: "your_instance_token",

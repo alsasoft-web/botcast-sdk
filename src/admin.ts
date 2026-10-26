@@ -1,7 +1,12 @@
 import { BotcastError } from './errors.js';
+import { BOTCAST_OFFICIAL_URL } from './types/index.js';
 
 export interface BotcastAdminConfig {
-  baseUrl?: string;
+  /**
+   * The official Botcast platform gateway URL.
+   * Fixed and locked to `https://botcast.site` (cannot be changed).
+   */
+  baseUrl?: 'https://botcast.site' | string;
   apiKey: string;
   timeout?: number;
   headers?: Record<string, string>;
@@ -47,7 +52,12 @@ export class BotcastAdminClient {
     if (!config.apiKey) {
       throw new Error('BotcastAdminClient requires a valid "apiKey" (e.g. bcast_live_...)');
     }
-    this.baseUrl = (config.baseUrl || 'https://botcast.site').replace(/\/+$/, '');
+    if (config.baseUrl && config.baseUrl.replace(/\/+$/, '') !== BOTCAST_OFFICIAL_URL) {
+      throw new Error(
+        `Changing the Botcast website URL is not allowed. The SDK is locked to ${BOTCAST_OFFICIAL_URL}.`
+      );
+    }
+    this.baseUrl = BOTCAST_OFFICIAL_URL;
     this.apiKey = config.apiKey.trim();
     this.timeout = config.timeout || 30000;
     this.headers = config.headers || {};

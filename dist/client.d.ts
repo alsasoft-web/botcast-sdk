@@ -1,4 +1,4 @@
-import { BotcastClientConfig } from './types/index.js';
+import { BotcastClientConfig, BOTCAST_OFFICIAL_URL } from './types/index.js';
 import { InstancesModule } from './modules/instances.js';
 import { MessagesModule } from './modules/messages.js';
 import { ChatsModule } from './modules/chats.js';
@@ -7,6 +7,7 @@ import { ProfileModule } from './modules/profile.js';
 import { BroadcastModule } from './modules/broadcast.js';
 import { BotcastWebhook } from './webhooks/index.js';
 import { BotcastSocketClient, BotcastSocketOptions } from './socket/index.js';
+export { BOTCAST_OFFICIAL_URL };
 export declare class BotcastClient {
     private config;
     /** Instance Lifecycle & Connection Management */

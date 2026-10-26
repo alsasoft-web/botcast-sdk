@@ -66,7 +66,6 @@ Use `BotcastAdminClient` in your backend / server to manage customer instances.
 import { BotcastAdminClient } from 'botcast-sdk';
 
 const admin = new BotcastAdminClient({
-  baseUrl: 'https://botcast.site', // or self-hosted URL
   apiKey: process.env.BOTCAST_API_KEY!, // bcast_live_...
   timeout: 30000,
 });

@@ -1,14 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BotcastClient = void 0;
+exports.BotcastClient = exports.BOTCAST_OFFICIAL_URL = void 0;
+const index_js_1 = require("./types/index.js");
+Object.defineProperty(exports, "BOTCAST_OFFICIAL_URL", { enumerable: true, get: function () { return index_js_1.BOTCAST_OFFICIAL_URL; } });
 const instances_js_1 = require("./modules/instances.js");
 const messages_js_1 = require("./modules/messages.js");
 const chats_js_1 = require("./modules/chats.js");
 const groups_js_1 = require("./modules/groups.js");
 const profile_js_1 = require("./modules/profile.js");
 const broadcast_js_1 = require("./modules/broadcast.js");
-const index_js_1 = require("./webhooks/index.js");
-const index_js_2 = require("./socket/index.js");
+const index_js_2 = require("./webhooks/index.js");
+const index_js_3 = require("./socket/index.js");
 class BotcastClient {
     config;
     /** Instance Lifecycle & Connection Management */
@@ -59,8 +61,11 @@ class BotcastClient {
         if (!config.instanceToken) {
             throw new Error('BotcastClient requires a valid "instanceToken"');
         }
+        if (config.baseUrl && config.baseUrl.replace(/\/+$/, '') !== index_js_1.BOTCAST_OFFICIAL_URL) {
+            throw new Error(`Changing the Botcast website URL is not allowed. The SDK is locked to ${index_js_1.BOTCAST_OFFICIAL_URL}.`);
+        }
         this.config = {
-            baseUrl: config.baseUrl || 'https://botcast.site',
+            baseUrl: index_js_1.BOTCAST_OFFICIAL_URL,
             platform: config.platform || 'whatsapp',
             instanceId: config.instanceId,
             instanceToken: config.instanceToken,
@@ -75,8 +80,8 @@ class BotcastClient {
         this.groups = new groups_js_1.GroupsModule(this.config);
         this.profile = new profile_js_1.ProfileModule(this.config);
         this.broadcast = new broadcast_js_1.BroadcastModule(this.config);
-        this.webhook = new index_js_1.BotcastWebhook();
-        this.socket = new index_js_2.BotcastSocketClient(this.config, {
+        this.webhook = new index_js_2.BotcastWebhook();
+        this.socket = new index_js_3.BotcastSocketClient(this.config, {
             autoConnect: config.autoConnectSocket,
             ...socketOptions,
         });

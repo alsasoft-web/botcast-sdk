@@ -14,6 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BOTCAST_OFFICIAL_URL = void 0;
 __exportStar(require("./instances.js"), exports);
 __exportStar(require("./messages.js"), exports);
 __exportStar(require("./chats.js"), exports);
@@ -21,3 +22,4 @@ __exportStar(require("./groups.js"), exports);
 __exportStar(require("./profile.js"), exports);
 __exportStar(require("./webhooks.js"), exports);
 __exportStar(require("./socket.js"), exports);
+exports.BOTCAST_OFFICIAL_URL = 'https://botcast.site';
